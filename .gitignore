@@ -1,3 +1,4 @@
+# Core build artifacts
 *~
 _*
 *.o
@@ -16,3 +17,16 @@ kernel/kernel
 user/usys.S
 .gdbinit
 TAGS
+
+# Disk and emulator output
+fs.img
+*.log
+*.pid
+*.lock
+
+# VS Code / Editor
+.vscode/
+*.code-workspace
+
+# Archives
+*.zip
