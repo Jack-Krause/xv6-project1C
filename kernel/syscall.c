@@ -101,7 +101,7 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
-extern uint64 sys_startLogging(void); // 2.2
+extern uint64 sys_startLogging(void); // 2.3
 extern uint64 sys_stopLogging(void);
 extern uint64 sys_nice(void);
 
@@ -129,7 +129,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_startLogging] sys_startLogging, // 2.2
+[SYS_startLogging] sys_startLogging, // 2.3
 [SYS_stopLogging] sys_stopLogging,
 [SYS_nice] sys_nice,
 };
