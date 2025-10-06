@@ -169,6 +169,7 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+  p->nice = 0; // 2.3 set default nice value to 0
 }
 
 // Create a user page table for a given process, with no user memory,
