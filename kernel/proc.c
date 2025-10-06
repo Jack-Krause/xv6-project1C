@@ -45,7 +45,6 @@ uint64 sys_stopLogging(void) {
 
 // 2.3 definition for system call 24
 uint64 sys_nice(void) {
-  uint64 new_nice_value;
   struct proc *p;
 
   int pid;
@@ -57,6 +56,7 @@ uint64 sys_nice(void) {
   // find process in process table
   for (p = proc; p < &proc[NPROC]; p++) {
     if (p->state != UNUSED && p->pid == pid) {
+      int new_nice_value;
       new_nice_value = p->nice + inc;
       
       if (new_nice_value < -20)
@@ -69,7 +69,7 @@ uint64 sys_nice(void) {
       if (logging_enabled)
         printf("nice set to %d for %d\n", p->nice, pid);
 
-      return new_nice_value;
+      return (uint64)p->nice;
     }
   }
   
