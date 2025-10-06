@@ -26,6 +26,57 @@ extern char trampoline[]; // trampoline.S
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
 
+// 2.2 flag for logging
+static int logging_enabled = 0;
+
+// 2.2 definition for system call 22
+uint64 sys_startLogging(void) {
+  logging_enabled = 1;
+  printf("Logging Started\n");
+  return 0;
+}
+
+// 2.2 definition for system call 23
+uint64 sys_stopLogging(void) {
+  logging_enabled = 0;
+  printf("Logging Stopped\n");
+  return 0;
+}
+
+// 2.3 definition for system call 24
+uint64 sys_nice(void) {
+  uint64 new_nice_value;
+  struct proc *p;
+
+  int pid;
+  int inc;
+  // find the parameters passed by the user 
+  argint(0, &pid);
+  argint(1, &inc);
+
+  // find process in process table
+  for (p = proc; p < &proc[NPROC]; p++) {
+    if (p->state != UNUSED && p->pid == pid) {
+      new_nice_value = p->nice + inc;
+      
+      if (new_nice_value < -20)
+        new_nice_value = -20;
+      else if (new_nice_value > 19)
+        new_nice_value = 19;
+
+      p->nice = new_nice_value;
+
+      if (logging_enabled)
+        printf("nice set to %d for %d\n", p->nice, pid);
+
+      return new_nice_value;
+    }
+  }
+  
+  printf("Warning: no process found for %d\n", pid);
+  return -1;
+}
+
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
