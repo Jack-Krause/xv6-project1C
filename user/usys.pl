@@ -42,3 +42,6 @@ entry("getpid");
 entry("sbrk");
 entry("pause");
 entry("uptime");
+entry("startLogging"); # 2.3
+entry("stopLogging");
+entry("nice");
