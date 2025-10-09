@@ -496,6 +496,7 @@ scheduler(void)
         // 2.4 (here maybe?) modify the scheduler() function to print a message right 
         // before it switches to a different process like "running 2 at 23"
         // printf("running %d at %d", {pid}, {ticks})
+        // printf("running %d at %d", {p->pid}, {ticks})
 
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
