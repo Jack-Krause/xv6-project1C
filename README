@@ -1,3 +1,91 @@
+JACK KRAUSE - COMS 3520 project 1b
+
+Summary: This project extends the xv6 kernel by adding 3 new system calls and modifying the scheduler to support kernel logging and process nice values.
+
+New System Calls:
+
+#22: `startLogging()` - enables context switch logging in the kernel scheduler
+
+#23: `stopLogging()` - disables scheduler logging
+
+#24: `nice(pid, inc)` - Adjusts the nice value of the process with pid by inc (bounded from -20 to +19)
+
+```
+xv6 kernel is booting
+
+init: starting sh
+$ logtest
+Logging Started
+running 4 at 33
+nice set to 10 for 4
+running 4 at 34
+running 4 at 35
+running 4 at 36
+running 4 at 37
+running 4 at 38
+running 4 at 39
+running 4 at 40
+running 4 at 41
+running 4 at 42
+running 4 at 43
+running 4 at 44
+running 4 at 45
+running 4 at 46
+running 4 at 47
+running 4 at 48
+running 4 at 49
+running 4 at 50
+running 4 at 51
+running 4 at 52
+running 4 at 53
+running 4 at 54
+running 4 at 55
+running 4 at 56
+running 4 at 57
+running 4 at 58
+running 4 at 59
+running 4 at 60
+running 4 at 61
+running 4 at 62
+running 4 at 63
+running 4 at 64
+running 4 at 65
+running 4 at 66
+running 4 at 67
+running 4 at 68
+running 4 at 69
+running 4 at 70
+running 4 at 71
+running 4 at 72
+running 3 at 72
+Logging Stopped
+$ 
+```
+
+Test: bounded nice values (-20 to +19)
+
+Note: logging stopped to avoid breaking up of outputs via preemption
+
+xv6 kernel output:
+```
+xv6 kernel is booting
+
+init: starting sh
+$ logtest
+Logging Started
+running 4 at 146
+Logging Stopped
+nice after +1000, nice=19, exp=19
+nice after - 10k, nice=-20, exp=(-20)
+nice after +5, nice=-15, exp=-15
+Logging Started
+running 3 at 146
+Logging Stopped
+$ 
+```
+
+
+
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 but is implemented for a modern RISC-V multiprocessor using ANSI C.
