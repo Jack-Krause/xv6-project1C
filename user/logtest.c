@@ -3,7 +3,6 @@
 #include "user/user.h"
 
 int main(int argc, char *argv[]) {
-    // TODO...
 
     startLogging();
     int pid = fork();
@@ -16,9 +15,7 @@ int main(int argc, char *argv[]) {
 
     if (pid == 0) {
         int child_pid = getpid();
-
         int newnice = nice(child_pid, 10);
-        printf("child %d nice set to %d\n", child_pid, newnice);
 
         // do cpu burn
         volatile int calc = 0;
