@@ -1,14 +1,23 @@
-JACK KRAUSE - COMS 3520 project 1b
+***JACK KRAUSE - COMS 3520 project 1b***
 
 Summary: This project extends the xv6 kernel by adding 3 new system calls and modifying the scheduler to support kernel logging and process nice values.
 
-New System Calls:
+**New System Calls:**
 
 #22: `startLogging()` - enables context switch logging in the kernel scheduler
 
 #23: `stopLogging()` - disables scheduler logging
 
 #24: `nice(pid, inc)` - Adjusts the nice value of the process with pid by inc (bounded from -20 to +19)
+
+**Scheduler logging format:**
+
+running `pid` at `ticks`
+
+Where `ticks` is the global tick timer.
+
+**Running `$ logtest` command:**
+
 
 ```
 xv6 kernel is booting
@@ -62,7 +71,7 @@ Logging Stopped
 $ 
 ```
 
-Test: bounded nice values (-20 to +19)
+**Test: bounded nice values [-20, 19]**
 
 Note: logging stopped to avoid breaking up of outputs via preemption
 
@@ -84,7 +93,31 @@ Logging Stopped
 $ 
 ```
 
+**Specifics: Implementation Details:**
 
+kernel/proc.c:
+- added `static int logging_enabled = 0;`
+- added `sys_startLogging()`, `sys_stopLogging()`, `sys_nice()`
+- in `scheduler()`, print running pid, ticks before calling `swtch(...)`
+
+kernel/syscall.h:
+- added syscall numbers 22/23/24 and entries in the syscall table
+
+user/user.h, user/usys.pl:
+- added user prototypes and entries for system calls `startLogging()`, `stopLogging()`, `nice(pid, inc)`
+
+user/logtest.c (new file):
+- added functionality script
+- starts logging
+- `fork()` to create child process
+- child sets nice value to 10
+- child performs cpu burn
+- parent process performs `wait()` for child process
+- stops logging
+
+
+
+**XV6 Info**
 
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
