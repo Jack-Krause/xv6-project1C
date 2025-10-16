@@ -1,24 +1,21 @@
-***JACK KRAUSE - COMS 3520 project 1b***
+# JACK KRAUSE - COMS 3520 project 1b
 
-Summary: This project extends the xv6 kernel by adding 3 new system calls and modifying the scheduler to support kernel logging and process nice values.
+### Summary
+This project extends the xv6 kernel by adding 3 new system calls and modifying the scheduler to support kernel logging and process nice values.
 
-**New System Calls:**
-
+## New System Calls
 #22: `startLogging()` - enables context switch logging in the kernel scheduler
 
 #23: `stopLogging()` - disables scheduler logging
 
 #24: `nice(pid, inc)` - Adjusts the nice value of the process with pid by inc (bounded from -20 to +19)
 
-**Scheduler logging format:**
-
+### Scheduler Logging Format
 running `pid` at `ticks`
 
-Where `ticks` is the global tick timer.
+Where `ticks` is the global tick counter.
 
-**Running `$ logtest` command:**
-
-
+## Running `$ logtest`
 ```
 xv6 kernel is booting
 
@@ -71,8 +68,16 @@ Logging Stopped
 $ 
 ```
 
-**Test: bounded nice values [-20, 19]**
 
+### Explanation
+- `Logging Started` → `sys_startLogging()` enabled scheduler output.  
+- Each `running 4 at <t>` shows the kernel about to context-switch to PID 4.  
+- `nice set to 10 for 4` comes from `sys_nice()`.  
+- Continuous lines show the child running while burning CPU.  
+- `running 3 at 72` marks the shell (PID 3) regaining control after the child exits.  
+
+
+## Test — Bounded Nice Values [–20, 19]
 Note: logging stopped to avoid breaking up of outputs via preemption
 
 xv6 kernel output:
@@ -93,27 +98,33 @@ Logging Stopped
 $ 
 ```
 
-**Specifics: Implementation Details:**
+## Implementation Details
+### `kernel/proc.c`
+- Added `static int logging_enabled = 0;`
+- Implemented `sys_startLogging()`, `sys_stopLogging()`, `sys_nice()`
+- Added logging print inside `scheduler()` just before `swtch()`
+- Initialized `p->nice = 0` for new processes
 
-kernel/proc.c:
-- added `static int logging_enabled = 0;`
-- added `sys_startLogging()`, `sys_stopLogging()`, `sys_nice()`
-- in `scheduler()`, print running pid, ticks before calling `swtch(...)`
+### `kernel/syscall.h`
+- Added `SYS_startLogging 22`, `SYS_stopLogging 23`, `SYS_nice 24`
 
-kernel/syscall.h:
-- added syscall numbers 22/23/24 and entries in the syscall table
+### `kernel/syscall.c`
+- Added corresponding entries to the syscall table
 
-user/user.h, user/usys.pl:
-- added user prototypes and entries for system calls `startLogging()`, `stopLogging()`, `nice(pid, inc)`
+### `user/user.h`, `user/usys.pl`
+- Added user-space prototypes and entries for `startLogging()`, `stopLogging()`, and `nice(pid, inc)`
 
-user/logtest.c (new file):
-- added functionality script
-- starts logging
-- `fork()` to create child process
-- child sets nice value to 10
-- child performs cpu burn
-- parent process performs `wait()` for child process
-- stops logging
+### `user/logtest.c`
+- Starts logging → `fork()` → child sets nice = 10 and burns CPU → parent `wait()` → stop logging → exit
+
+---
+
+## Build and Run
+```sh
+make clean && make qemu
+# In xv6:
+$ logtest
+```
 
 
 
