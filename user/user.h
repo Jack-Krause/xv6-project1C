@@ -24,7 +24,7 @@ int getpid(void);
 char* sys_sbrk(int,int);
 int pause(int);
 int uptime(void);
-void startLogging(void); // 2.3
+void startLogging(void); // 2.3 user-space system call prototypes
 void stopLogging(void);
 int nice(int pid, int inc);
 

@@ -20,6 +20,7 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+// 2.2-2.3 added new syscall numbers for logging and nice
 #define SYS_startLogging 22
 #define SYS_stopLogging 23
 #define SYS_nice 24

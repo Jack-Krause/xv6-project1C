@@ -1,3 +1,6 @@
+// COMS 3520 proj1b - Jack Krause
+// added scheduler logging and nice() system call support
+// includes: sys_startLogging, sys_stopLogging, and sys_nice implementations
 #include "types.h"
 #include "param.h"
 #include "memlayout.h"
@@ -27,9 +30,11 @@ extern char trampoline[]; // trampoline.S
 struct spinlock wait_lock;
 
 // 2.2 flag for logging
+// added global flag to enable/disable scheduler context-switch logging
 static int logging_enabled = 0;
 
 // 2.2 definition for system call 22
+// start scheduler logging by setting logging_enabled to 1
 uint64 sys_startLogging(void) {
   logging_enabled = 1;
   printf("Logging Started\n");
@@ -37,6 +42,7 @@ uint64 sys_startLogging(void) {
 }
 
 // 2.2 definition for system call 23
+// stop scheduler logging by setting logging_enabled to 0
 uint64 sys_stopLogging(void) {
   logging_enabled = 0;
   printf("Logging Stopped\n");
@@ -44,6 +50,9 @@ uint64 sys_stopLogging(void) {
 }
 
 // 2.3 definition for system call 24
+// adjusts the nice value of a process by the increment value specified by the user
+// uses pid and inc from user arguments
+// bounds nice value to [-20, 19]
 uint64 sys_nice(void) {
   struct proc *p;
 
@@ -53,7 +62,8 @@ uint64 sys_nice(void) {
   argint(0, &pid);
   argint(1, &inc);
 
-  // find process in process table
+  // find process in process table with given pid and update its nice value
+  // if logging enabled, print a message
   for (p = proc; p < &proc[NPROC]; p++) {
     if (p->state != UNUSED && p->pid == pid) {
       int new_nice_value;
@@ -220,7 +230,7 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
-  p->nice = 0; // 2.2 set default nice value to 0
+  p->nice = 0; // 2.2 set default nice value to 0 for new processes
 }
 
 // Create a user page table for a given process, with no user memory,

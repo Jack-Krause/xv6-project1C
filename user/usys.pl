@@ -42,6 +42,6 @@ entry("getpid");
 entry("sbrk");
 entry("pause");
 entry("uptime");
-entry("startLogging"); # 2.3
+entry("startLogging"); # 2.3 added system calls for logging and nice
 entry("stopLogging");
 entry("nice");

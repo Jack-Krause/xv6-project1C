@@ -129,7 +129,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_startLogging] sys_startLogging, // 2.2
+// added entries for new system calls startLogging, stopLogging, and nice
+[SYS_startLogging] sys_startLogging,
 [SYS_stopLogging] sys_stopLogging,
 [SYS_nice] sys_nice,
 };
