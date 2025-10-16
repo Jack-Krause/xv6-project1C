@@ -15,7 +15,8 @@ int main(int argc, char *argv[]) {
 
     if (pid == 0) {
         int child_pid = getpid();
-        int newnice = nice(child_pid, 10);
+        // int newnice = nice(child_pid, 10);
+        nice(child_pid, 10);
 
         // do cpu burn
         volatile int calc = 0;
