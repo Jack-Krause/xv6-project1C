@@ -1,3 +1,38 @@
+# JACK KRAUSE - COMS 3520 project 1c
+
+### Summary
+For this project, we implement the following new schedulers for the xv6 OS:
+
+1. round-robin scheduler with strict priorities (RRSP), and
+2. multi-level feedback queue (MLFQ)
+
+### RRSP rules
+for any processes A and B:
+
+1. if **priority(A) > priority(B)**, A runs (B doesn't)
+2. if **priority(A) == priority(B)**, A and B run in round-robin fashion with a 1-tick quanta
+3. The priority of a process X is related to the nice value of the process based on this formula: **priority(X) = 20 - nice(X)**. Note: lower nice means higher priority.
+
+
+### MLFQ rules
+for any processes A and B:
+1. if **priority(A) > priority(B)**, A runs (B doesn't)
+2. if **priority(A) == priority(B)**, A and B run in round-robin fashion using the quantum length of the given queue (see table below)
+3. When a process enters the system, its starting queue is determined by its nice value (see table below).
+4. Once a process uses up its time allotment at a given level (regardless of how many times its given up the CPU), its priority is reduced (moves down one queue).
+5. After every 60 ticks, all processes in the system are moved back to their starting queues (*priority boost*).
+6. Whenever the nice value of a process is updated (*nice() system call*), its queue level is also changed to be the starting queue level for that nice value, according to the table below. Note: this may result in the process moving to another queue.
+
+## MLFQ Queue Levels Based on Nice Values
+
+| Queue Level | Nice Value Range            | Time Quantum (ticks) |
+|-------------|------------------------------|------------------------|
+| **Q2 (highest)** | Nice ≤ -10                     | 1                      |
+| **Q1**           | -10 < Nice ≤ 10                | 10                     |
+| **Q0 (lowest)**  | Nice > 10                      | 15                     |
+
+
+
 # JACK KRAUSE - COMS 3520 project 1b
 
 ### Summary
