@@ -488,8 +488,35 @@ void scheduler_mlfq(void) {
 // 1c (3.1)
 // alternative version of scheduler(), implementing an RRSP
 void scheduler_rrsp(void) {
-  // TODO: implement
-  for (;;) {}
+  struct proc *p;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+
+  for (;;) { // infinite outer loop
+    intr_on();
+    intr_off();
+    int found = 0;
+
+    for (p = proc; p < &proc[NPROC]; p++) {
+
+      acquire(&p->lock);
+      if (p->state == RUNNABLE) {
+
+        if (logging_enabled)
+          printf("running %d at $u\n", p->pid, ticks);
+
+        
+        // perform context switch
+        p->state = RUNNING;
+        c->proc = p;
+        swtch(&c->context, &p->context);
+
+      }
+      release(&p->lock);
+
+    }
+
+  }
 
 }
 
