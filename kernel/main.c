@@ -41,5 +41,28 @@ main()
     plicinithart();   // ask PLIC for device interrupts
   }
 
-  scheduler();        
+  // if (SCHEDULER == SCHED_RR) {
+  //   scheduler();
+  // } else if (SCHEDULER == SCHED_RRSP) {
+  //   scheduler_rrsp();
+  // } else if (SCHEDULER == SCHED_MLFQ) {
+  //   scheduler_mlfq();
+  // }
+
+  // implemented the above logic as a preprocessor directive
+  //   so the scheduler is selected at compile time.
+  // this means that only the chosen scheduler needs to be compiled and linked,
+  //   and unused schedulers can be ommited or incomplete
+  #if SCHEDULER == SCHED_RR
+    scheduler();
+  #elif SCHEDULER == SCHED_RRSP
+    scheduler_rrsp();
+  #elif SCHEDULER == SCHED_MLFQ
+    scheduler_mlfq();
+  #else
+  #error "scheduler not selected"
+  #endif
+
+
+
 }

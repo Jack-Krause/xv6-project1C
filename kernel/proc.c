@@ -476,6 +476,23 @@ kwait(uint64 addr)
   }
 }
 
+// 1c (3.1)
+// alternative version of scheduler(), implementing a MLFQ
+void scheduler_mlfq(void) {
+  // TODO: implement this
+  for (;;) {}
+
+}
+
+
+// 1c (3.1)
+// alternative version of scheduler(), implementing an RRSP
+void scheduler_rrsp(void) {
+  // TODO: implement
+  for (;;) {}
+
+}
+
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
