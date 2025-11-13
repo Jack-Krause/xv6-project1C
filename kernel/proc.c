@@ -499,6 +499,9 @@ void scheduler_rrsp(void) {
 
     for (p = proc; p < &proc[NPROC]; p++) {
 
+      // per spec, priority = 20 - nice value
+      int priority = 20 - p->nice;
+
       acquire(&p->lock);
       if (p->state == RUNNABLE) {
 
@@ -511,9 +514,15 @@ void scheduler_rrsp(void) {
         c->proc = p;
         swtch(&c->context, &p->context);
 
+        // c->proc = 0;
+        found = 1;
+
       }
       release(&p->lock);
+    }
 
+    if (found == 0) {
+      asm volatile("wfi");
     }
 
   }
