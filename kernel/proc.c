@@ -49,10 +49,26 @@ uint64 sys_stopLogging(void) {
   return 0;
 }
 
+// no side effects, just calculates what the queue level should be
+int nice_to_queue(struct proc *p) {
+  int p_nice = p->nice;
+
+  // calculate p's queue level based on MLFQ rules specified
+  if (p_nice <= -10) {
+    return 2; // highest-priority level
+  } else if (p_nice > -10 && p_nice <= 10) {
+    return 1;
+  } else {
+    return 0; // lowest-priority level
+  }
+
+}
+
 // 2.3 definition for system call 24
 // adjusts the nice value of a process by the increment value specified by the user
 // uses pid and inc from user arguments
 // bounds nice value to [-20, 19]
+// 1.c(3.3) update the queue level for MLFQ
 uint64 sys_nice(void) {
   struct proc *p;
 
@@ -75,9 +91,14 @@ uint64 sys_nice(void) {
         new_nice_value = 19;
 
       p->nice = new_nice_value;
+      // 1.c(3.3) update the MLFQ queue level based on p's nice value
+      p->queue = nice_to_queue(p);
 
-      if (logging_enabled)
+
+      if (logging_enabled) {
         printf("nice set to %d for %d\n", p->nice, pid);
+        printf("queue level set to %d for %d\n", p->queue, pid);
+      }
 
       return (uint64)p->nice;
     }
@@ -86,6 +107,7 @@ uint64 sys_nice(void) {
   printf("Warning: no process found for %d\n", pid);
   return -1;
 }
+
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
