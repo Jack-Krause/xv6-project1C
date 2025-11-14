@@ -155,8 +155,12 @@ kerneltrap()
   }
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2 && myproc() != 0)
+  if(which_dev == 2 && myproc() != 0) {
+    struct proc *p = myproc();
+    p->runtime++; // 1c(3.3) increment the runtime when a process is preempted
     yield();
+
+  }
 
   // the yield() may have caused some traps to occur,
   // so restore trap registers for use by kernelvec.S's sepc instruction.
