@@ -499,58 +499,46 @@ void scheduler_rrsp(void) {
     // int found = 0;
     int max_priority = -100000;
 
-
+    // locate highest priority RUNNABLE process
     for (p = proc; p < &proc[NPROC]; p++) {
-
-
       acquire(&p->lock);
 
       if (p->state == RUNNABLE) {
       // per spec, priority = 20 - nice value
         int priority_p = 20 - p->nice;
-
         if (priority_p > max_priority) {
           max_priority = priority_p;
         }
+      }
 
-        if (logging_enabled)
-          printf("running %d at $u\n", p->pid, ticks);
-
-        
-        // perform context switch
-
-        // c->proc = 0;
-        // found = 1;
-
-      } // end if runnable
       release(&p->lock);
-    } // end inner-loop
+    }
 
     if (max_priority == -100000) {
-      // handle error
       continue; // no runnable process right now
     }
 
+    // choose first-runnable process with max priority
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
 
-
-
       if (p->state == RUNNABLE && ((20 - p->nice) == max_priority)) {
+
+        if (logging_enabled)
+          printf("running %d at %u\n", p->pid, ticks);
+
         // perform context switch
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
 
+        release(&p->lock);
+        break;
       }
+
+      release(&p->lock);
     }
-
-    // if (found == 0) {
-    //   asm volatile("wfi");
-    // }
-
   }
-
 }
 
 // Per-CPU process scheduler.
