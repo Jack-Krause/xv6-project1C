@@ -52,7 +52,7 @@ main()
   // implemented the above logic as a preprocessor directive
   //   so the scheduler is selected at compile time.
   // this means that only the chosen scheduler needs to be compiled and linked,
-  //   and unused schedulers can be ommited or incomplete
+  //   and unused schedulers can be ommited or incompletea
   #if SCHEDULER == SCHED_RR
     scheduler();
   #elif SCHEDULER == SCHED_RRSP

@@ -15,5 +15,6 @@
 #define SCHED_RR     0     // default round-robin scheduler
 #define SCHED_RRSP   1     // 1c(3.1) implemented round-robin scheduler with strict priorities (RRSP)
 #define SCHED_MLFQ   2     // 1c(3.1) implemented multi-level feedback queue (MLFQ)
-#define SCHEDULER    SCHED_RR  // 1c(3.1) change this line to select a different scheduler
+// #define SCHEDULER    SCHED_RR  // 1c(3.1) change this line to select a different scheduler
+#define SCHEDULER    SCHED_RRSP // 1c(3.1) change this line to select a different scheduler
 

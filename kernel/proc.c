@@ -492,33 +492,28 @@ void scheduler_rrsp(void) {
   struct cpu *c = mycpu();
   c->proc = 0;
 
-  for (;;) { // infinite outer loop
-    intr_on();
-    intr_off();
+  for (;;) {
+    intr_on();   // allow timer interrupts
 
-    // int found = 0;
     int max_priority = -100000;
 
-    // locate highest priority RUNNABLE process
+    // PASS 1 — find highest priority
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
-
       if (p->state == RUNNABLE) {
-      // per spec, priority = 20 - nice value
         int priority_p = 20 - p->nice;
-        if (priority_p > max_priority) {
+        if (priority_p > max_priority)
           max_priority = priority_p;
-        }
       }
-
       release(&p->lock);
     }
 
     if (max_priority == -100000) {
-      continue; // no runnable process right now
+      // no runnable process
+      continue;
     }
 
-    // choose first-runnable process with max priority
+    // PASS 2 — select first process with that priority
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
 
@@ -527,19 +522,21 @@ void scheduler_rrsp(void) {
         if (logging_enabled)
           printf("running %d at %u\n", p->pid, ticks);
 
-        // perform context switch
         p->state = RUNNING;
         c->proc = p;
+
         swtch(&c->context, &p->context);
 
+        c->proc = 0;
         release(&p->lock);
-        break;
+        break;   // run exactly one process per tick
       }
 
       release(&p->lock);
     }
   }
 }
+
 
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
