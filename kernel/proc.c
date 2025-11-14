@@ -186,6 +186,10 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
+  p->nice = 0;
+  p->queue = 2; // highest queue for mlfq
+
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -283,7 +287,7 @@ userinit(void)
 {
   struct proc *p;
 
-  p = allocproc();
+  p = allocproc(); // allocproc sets nice to 0 and highest mlfq queue level (2)
   initproc = p;
   
   p->cwd = namei("/");
