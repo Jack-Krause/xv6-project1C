@@ -495,35 +495,59 @@ void scheduler_rrsp(void) {
   for (;;) { // infinite outer loop
     intr_on();
     intr_off();
-    int found = 0;
+
+    // int found = 0;
+    int max_priority = -100000;
+
 
     for (p = proc; p < &proc[NPROC]; p++) {
 
-      // per spec, priority = 20 - nice value
-      int priority = 20 - p->nice;
 
       acquire(&p->lock);
+
       if (p->state == RUNNABLE) {
+      // per spec, priority = 20 - nice value
+        int priority_p = 20 - p->nice;
+
+        if (priority_p > max_priority) {
+          max_priority = priority_p;
+        }
 
         if (logging_enabled)
           printf("running %d at $u\n", p->pid, ticks);
 
         
         // perform context switch
+
+        // c->proc = 0;
+        // found = 1;
+
+      } // end if runnable
+      release(&p->lock);
+    } // end inner-loop
+
+    if (max_priority == -100000) {
+      // handle error
+      continue; // no runnable process right now
+    }
+
+    for (p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+
+
+
+      if (p->state == RUNNABLE && ((20 - p->nice) == max_priority)) {
+        // perform context switch
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
 
-        // c->proc = 0;
-        found = 1;
-
       }
-      release(&p->lock);
     }
 
-    if (found == 0) {
-      asm volatile("wfi");
-    }
+    // if (found == 0) {
+    //   asm volatile("wfi");
+    // }
 
   }
 
