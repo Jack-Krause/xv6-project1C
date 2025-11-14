@@ -106,4 +106,6 @@ struct proc {
   char name[16];               // Process name (debugging)
   int nice;                    // Nice value for each process
   int queue;                   // 1c(3.3) indicates the process's current queue level for MLFQ
+  int runtime;
+
 };

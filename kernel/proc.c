@@ -50,7 +50,7 @@ uint64 sys_stopLogging(void) {
 }
 
 // no side effects, just calculates what the queue level should be
-int nice_to_queue(struct proc *p) {
+static int nice_to_queue(struct proc *p) {
   int p_nice = p->nice;
 
   // calculate p's queue level based on MLFQ rules specified
@@ -209,7 +209,8 @@ found:
   p->state = USED;
 
   p->nice = 0;
-  p->queue = 2; // highest queue for mlfq
+  p->runtime = 0; // 1.c(3.3) set the 
+  p->queue = nice_to_queue(p); // initial queue level based on starting nice of 0
 
 
   // Allocate a trapframe page.
@@ -257,6 +258,8 @@ freeproc(struct proc *p)
   p->xstate = 0;
   p->state = UNUSED;
   p->nice = 0; // 2.2 set default nice value to 0 for new processes
+  p->queue = 0;
+  p->runtime = 0; // 1.c(3.3)
 }
 
 // Create a user page table for a given process, with no user memory,
@@ -504,64 +507,61 @@ kwait(uint64 addr)
 
 // 1c (3.1)
 // alternative version of scheduler(), implementing a MLFQ
-void scheduler_mlfq(void) {
-  // TODO: implement this
-  for (;;) {}
-
-}
-
-
-// 1c (3.1)
-// alternative version of scheduler(), implementing an RRSP
-void scheduler_rrsp(void) {
+void
+scheduler_rrsp(void)
+{
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
 
   for (;;) {
-    intr_on();   // allow timer interrupts
+    intr_on();
 
     int max_priority = -100000;
+    int found = 0;
 
-    // PASS 1 — find highest priority
+    // PASS 1: find highest priority among RUNNABLE procs
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if (p->state == RUNNABLE) {
-        int priority_p = 20 - p->nice;
-        if (priority_p > max_priority)
-          max_priority = priority_p;
+        int pr = 20 - p->nice;
+        if (pr > max_priority)
+          max_priority = pr;
       }
       release(&p->lock);
     }
 
     if (max_priority == -100000) {
-      // no runnable process
+      // nothing runnable; match original behavior and sleep the CPU
+      asm volatile("wfi");
       continue;
     }
 
-    // PASS 2 — select first process with that priority
+    // PASS 2: run all RUNNABLE procs with that priority (round-robin over them)
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
-
-      if (p->state == RUNNABLE && ((20 - p->nice) == max_priority)) {
+      if (p->state == RUNNABLE && (20 - p->nice) == max_priority) {
 
         if (logging_enabled)
           printf("running %d at %u\n", p->pid, ticks);
 
         p->state = RUNNING;
         c->proc = p;
-
         swtch(&c->context, &p->context);
-
         c->proc = 0;
-        release(&p->lock);
-        break;   // run exactly one process per tick
-      }
 
+        found = 1;
+      }
       release(&p->lock);
+    }
+
+    if (!found) {
+      // nothing actually ran this round; safe to wfi
+      asm volatile("wfi");
     }
   }
 }
+
 
 
 // Per-CPU process scheduler.
