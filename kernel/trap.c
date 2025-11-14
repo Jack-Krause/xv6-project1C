@@ -57,6 +57,9 @@ usertrap(void)
     if(killed(p))
       kexit(-1);
 
+
+    p->runtime++; //1c(3.3) increment the runtime each time process is preempted
+
     // sepc points to the ecall instruction,
     // but we want to return to the next instruction.
     p->trapframe->epc += 4;

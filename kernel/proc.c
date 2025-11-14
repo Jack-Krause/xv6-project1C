@@ -563,6 +563,13 @@ scheduler_rrsp(void)
 }
 
 
+// 1c(3.3) implement a scheduler using mlfq
+void scheduler_mlfq(void) {
+  
+
+}
+
+
 
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
