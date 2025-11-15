@@ -16,6 +16,9 @@ struct proc proc[NPROC];
 struct proc *initproc;
 
 int nextpid = 1;
+
+static uint ticks_since_boost = 0;
+
 struct spinlock pid_lock;
 
 extern void forkret(void);
@@ -61,7 +64,12 @@ static int nice_to_queue(struct proc *p) {
   } else {
     return 0; // lowest-priority level
   }
+}
 
+static int queue_quanta(int q) {
+  if (q == 2) return 1;
+  if (q == 1) return 10;
+  return 15; 
 }
 
 // 2.3 definition for system call 24
@@ -565,7 +573,19 @@ scheduler_rrsp(void)
 
 // 1c(3.3) implement a scheduler using mlfq
 void scheduler_mlfq(void) {
-  
+  struct proc *p;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+
+  for (;;) {
+    intr_on();
+    // intr_off();
+
+
+
+
+  }
+
 
 }
 

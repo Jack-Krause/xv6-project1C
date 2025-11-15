@@ -58,7 +58,6 @@ usertrap(void)
       kexit(-1);
 
 
-    p->runtime++; //1c(3.3) increment the runtime each time process is preempted
 
     // sepc points to the ecall instruction,
     // but we want to return to the next instruction.
@@ -84,8 +83,10 @@ usertrap(void)
     kexit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if(which_dev == 2) {
     yield();
+    p->runtime++; //1c(3.3) increment the runtime each time process is preempted
+  }
 
   prepare_return();
 
