@@ -27,6 +27,10 @@ struct cpu {
 };
 
 extern struct cpu cpus[NCPU];
+extern uint ticks_since_boost; // 1c
+int nice_to_queue(struct proc *p); // 1c
+int queue_quanta(int q); // 1c
+
 
 // per-process data for the trap handling code in trampoline.S.
 // sits in a page by itself just under the trampoline page in the

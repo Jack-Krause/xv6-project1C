@@ -10,11 +10,51 @@ struct spinlock tickslock;
 uint ticks;
 
 extern char trampoline[], uservec[];
+#define BOOST_INTERVAL 60
+extern uint ticks_since_boost;
+extern struct proc proc[NPROC];
+int nice_to_queue(struct proc *p);
+int queue_quanta(int q);
 
 // in kernelvec.S, calls kerneltrap().
 void kernelvec();
 
 extern int devintr();
+
+// called once per timer tick for the currently running process
+static void mlqf_tick(struct proc *p) {
+  if (p == 0 || p->state != RUNNING) {
+    return;
+  }
+
+  p->runtime++;
+  ticks_since_boost++;
+
+  // demote process if used up quantim in this queue
+  if (p->runtime >= queue_quanta(p->queue)) {
+    p->runtime = 0;
+    if (p->queue > 0) {
+      p->queue--; // demote to lower-priority queue
+    }
+  }
+
+  // periodic priority boost
+  if (ticks_since_boost >= BOOST_INTERVAL) {
+    ticks_since_boost = 0;
+
+    struct proc *q;
+    for (q = proc; q < &proc[NPROC]; q++) {
+      acquire(&q->lock);
+
+      if (q->state != UNUSED) {
+        q->queue = nice_to_queue(q); // reset based on proc's nice value
+        q->runtime = 0;
+      }
+
+      release(&q->lock);
+    }
+  }
+}
 
 void
 trapinit(void)
@@ -84,9 +124,8 @@ usertrap(void)
 
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2) {
+    mlfq_tick(p);
     yield();
-    p->queue--; // 1c
-    p->runtime++; //1c(3.3) increment the runtime each time process is preempted
   }
 
   prepare_return();
@@ -158,10 +197,8 @@ kerneltrap()
 
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2 && myproc() != 0) {
-    struct proc *p = myproc();
-    p->runtime++; // 1c(3.3) increment the runtime when a process is preempted
+    mlfq_tick(myproc());
     yield();
-
   }
 
   // the yield() may have caused some traps to occur,
@@ -225,4 +262,5 @@ devintr()
     return 0;
   }
 }
+
 

@@ -17,7 +17,7 @@ struct proc *initproc;
 
 int nextpid = 1;
 
-static uint ticks_since_boost = 0;
+uint ticks_since_boost = 0;
 
 struct spinlock pid_lock;
 
