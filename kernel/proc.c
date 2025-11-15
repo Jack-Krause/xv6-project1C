@@ -53,7 +53,7 @@ uint64 sys_stopLogging(void) {
 }
 
 // no side effects, just calculates what the queue level should be
-static int nice_to_queue(struct proc *p) {
+int nice_to_queue(struct proc *p) {
   int p_nice = p->nice;
 
   // calculate p's queue level based on MLFQ rules specified
@@ -66,7 +66,7 @@ static int nice_to_queue(struct proc *p) {
   }
 }
 
-static int queue_quanta(int q) {
+int queue_quanta(int q) {
   if (q == 2) return 1;
   if (q == 1) return 10;
   return 15; 

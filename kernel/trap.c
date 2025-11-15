@@ -85,6 +85,7 @@ usertrap(void)
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2) {
     yield();
+    p->queue--; // 1c
     p->runtime++; //1c(3.3) increment the runtime each time process is preempted
   }
 
