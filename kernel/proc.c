@@ -579,14 +579,39 @@ void scheduler_mlfq(void) {
 
   for (;;) {
     intr_on();
-    // intr_off();
+    intr_off();
 
+    int found = 0;
 
+    // start with highest-priority queue
+    for (int level = 2; level <= 0; level--) {
+      // scan the process table looking for RUNNABLE procs in queue level
+      for (p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
 
+        if (p->state == RUNNABLE && p->queue == level) {
+          if (logging_enabled) {
+            printf("running %d (q=%d, nice=%d) at %u\n", 
+                    p->pid, p->queue, p->nice, ticks);
+          }
 
+          // run the process
+          p->state = RUNNING;
+          c->proc = p;
+          swtch(&c->context, &p->context);
+          c->proc = 0;
+
+          found = 1;
+        }
+
+        release(&p->lock);
+      }
+
+      if (!found) {
+        asm volatile("wfi");
+      }
+    }
   }
-
-
 }
 
 
