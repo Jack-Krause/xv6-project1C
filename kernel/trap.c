@@ -22,7 +22,7 @@ void kernelvec();
 extern int devintr();
 
 // called once per timer tick for the currently running process
-static void mlqf_tick(struct proc *p) {
+static void mlfq_tick(struct proc *p) {
   if (p == 0 || p->state != RUNNING) {
     return;
   }
