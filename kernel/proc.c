@@ -101,7 +101,7 @@ uint64 sys_nice(void) {
       p->nice = new_nice_value;
       // 1.c(3.3) update the MLFQ queue level based on p's nice value
       p->queue = nice_to_queue(p);
-
+      p->runtime = 0;
 
       if (logging_enabled) {
         printf("nice set to %d for %d\n", p->nice, pid);
