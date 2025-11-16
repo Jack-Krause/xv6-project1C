@@ -145,6 +145,7 @@ UPROGS=\
 	$U/_logtest\
 	$U/_fairtest\
 	$U/_nicetest\
+	$U/_intertest\
 
 fs.img: mkfs/mkfs README.md $(UPROGS)
 	mkfs/mkfs fs.img README.md $(UPROGS)
