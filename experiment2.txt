@@ -1,0 +1,31 @@
+Experiment 2
+
+Expected Behavior:
+- RR: Ignores nice → all tasks run equally.
+- RRSP: Strict priority → high-priority tasks run first and finish before low-priority ones.
+- MLFQ: Priority influenced by behavior; nice may affect initial queue but not strict like RRSP.
+
+Observed RR:
+running 4 at 27
+running 5 at 28
+running 6 at 29
+running 7 at 30
+(all start equally)
+→ RR ignores nice as expected.
+
+Observed RRSP:
+running 4 at 39
+running 5 at 40
+running 4 at 41
+running 5 at 42
+...
+(high-priority PIDs run exclusively)
+→ low-priority tasks only run after 4 and 5 finish.
+
+Observed MLFQ:
+(MLFQ not booting; expected behavior is partial preference, not strict starvation.)
+
+Conclusion:
+RR shows no priority behavior.  
+RRSP shows strict enforcement of nice.  
+MLFQ (expected): not strictly static like RRSP; avoids starvation but prefers higher queues.

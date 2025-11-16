@@ -1,0 +1,25 @@
+Experiment 3
+
+Expected Behavior:
+- RR: Alternates all runnable processes equally.
+- RRSP: Same as RR if nice is equal.
+- MLFQ: Favors interactive tasks (they remain in higher queues; CPU-bound tasks get demoted).
+
+Observed RR:
+running 4 at 104
+running 5 at 105
+running 6 at 108
+running 7 at 108
+...
+CPU-bound finish first; interactive tasks finish later.
+No special preference.
+
+Observed RRSP:
+Same pattern as RR (equal nice → equal priority).
+
+Observed MLFQ:
+(MLFQ not booting; expected behavior: interactive tasks run more often because they block and stay in higher queues.)
+
+Conclusion:
+RR and RRSP do not favor interactive workloads.  
+MLFQ is expected to demonstrate interactive preference once functioning.

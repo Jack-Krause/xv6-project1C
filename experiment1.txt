@@ -1,0 +1,26 @@
+Experiment 1
+
+Expected Behavior:
+- RR: Round-robin among all runnable processes.
+- RRSP: Same as RR because all priorities are equal.
+- MLFQ: All tasks behave the same and migrate together through queues → still effectively fair.
+
+Observed (RR example):
+running 4 at 65
+running 5 at 66
+running 6 at 67
+running 7 at 68
+running 4 at 69
+running 5 at 70
+...
+
+All four children alternate and finish without starvation.
+
+Observed (RRSP):
+Same alternating pattern since all priorities are equal.
+
+Observed (MLFQ):
+(MLFQ logs similar once working; behavior expected to be fair because all tasks are identical.)
+
+Conclusion:
+All schedulers treat equal-nice, CPU-bound tasks fairly. RRSP matches RR when priorities are equal; MLFQ provides no advantage or penalty because all tasks have identical behavior.
